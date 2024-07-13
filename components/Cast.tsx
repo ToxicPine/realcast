@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useLogin, useReaction } from 'farcasterkit-react-native'
-import { Link } from 'expo-router'
 import { useNavigation } from '@react-navigation/native'
 
 const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
@@ -58,9 +57,15 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
     const allMatches = Array.from(new Set([...textMatches, ...embedMatches]))
 
     // Render images
-    return allMatches.map((url) => (
-      <Image key={url} source={{ uri: url }} style={imageStyles.image} />
-    ))
+    return (
+      <View style={imageStyles.imagesContainer}>
+        {allMatches.map((url) => (
+          <View key={url} style={imageStyles.imageContainer}>
+            <Image source={{ uri: url }} style={imageStyles.image} />
+          </View>
+        ))}
+      </View>
+    )
   }
 
   const relativeTime = formatDistanceToNow(new Date(cast.timestamp), {
@@ -224,12 +229,28 @@ const imageStyles = StyleSheet.create({
     marginLeft: 0,
     marginRight: 16,
   },
-  image: {
-    width: '100%', // Set your desired image width
-    height: 100, // Set your desired image height
+  imagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 8,
     marginTop: 8,
-    marginRight: 4,
-    paddingBottom: 4,
+    marginBottom: 8,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: 400,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    backgroundColor: '#000000',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 })
 

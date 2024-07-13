@@ -219,7 +219,7 @@ export default function ConversationScreen() {
         keyExtractor={item => item.hash}
         estimatedItemSize={125}
       />
-      {thread.length > 0 && <ComposeCast hash={thread[0].hash} />}
+      {thread.length > 0 && <Cast hash={thread[0].hash} />}
     </View>
   );
 }
