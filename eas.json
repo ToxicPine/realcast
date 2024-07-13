@@ -7,9 +7,9 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_NEYNAR_API_KEY": "",
-        "EXPO_PUBLIC_NEYNAR_CLIENT_ID": "",
-        "EXPO_PUBLIC_API_URL": ""
+        "EXPO_PUBLIC_NEYNAR_API_KEY": "4DD20C0B-A805-4128-B6C5-048B4818DD31",
+        "EXPO_PUBLIC_NEYNAR_CLIENT_ID": "5af908d9-29d7-41b1-91d4-b8961085af18",
+        "EXPO_PUBLIC_API_URL": "https://api.farcasterkit.com"
       }
     },
     "preview": {
@@ -17,9 +17,9 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_NEYNAR_API_KEY": "",
-        "EXPO_PUBLIC_NEYNAR_CLIENT_ID": "",
-        "EXPO_PUBLIC_API_URL": ""
+        "EXPO_PUBLIC_NEYNAR_API_KEY": "4DD20C0B-A805-4128-B6C5-048B4818DD31",
+        "EXPO_PUBLIC_NEYNAR_CLIENT_ID": "5af908d9-29d7-41b1-91d4-b8961085af18",
+        "EXPO_PUBLIC_API_URL": "https://api.farcasterkit.com"
       }
     }
   },
