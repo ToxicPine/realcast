@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Pl
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../constants/Farcaster';
 import { useLogin } from 'farcasterkit-react-native';
+import { useNavigation } from '@react-navigation/native';
 // import { useLogin } from '../providers/NeynarProvider';
 
 const ComposeCast = ({ hash }: { hash?: string }) => {
@@ -11,6 +12,7 @@ const ComposeCast = ({ hash }: { hash?: string }) => {
   const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
   const [isInputVisible, setInputVisible] = useState<boolean>(false);
   const { farcasterUser } = useLogin();
+  const navigation = useNavigation();
 
   const handleCast = useHandleCast({ text, setText, setPlaceholder, farcasterUser, hash });
 
@@ -32,6 +34,9 @@ const ComposeCast = ({ hash }: { hash?: string }) => {
           {isInputVisible ? (
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
               <View style={styles.composeInputContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Camera')} style={styles.cameraButton}> 
+                  <MaterialIcons name="photo-camera" size={24} color="white" />
+                </TouchableOpacity>
                 <TextInput
                   ref={textInputRef}
                   value={text}
@@ -147,6 +152,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
+  },
+  cameraButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 2,
+    marginLeft: 0,
+    marginRight: 12,
   },
 });
 

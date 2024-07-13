@@ -2,6 +2,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useEffect, useRef } from 'react';
 import { Alert, Button, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import MediaLibrary from 'expo-media-library';
 
 export const CameraApp = () => {
@@ -11,6 +12,25 @@ export const CameraApp = () => {
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [serverData, setServerData] = useState(null);
   const [cameraRatio, setCameraRatio] = useState(["1:1", 1]); 
+
+  const navigation = useNavigation();
+  const handleBackPress = () => {
+    navigation.navigate('index');
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={handleBackPress} style={{ paddingLeft: 20, paddingRight: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
+        </TouchableOpacity>
+      ),
+      title: 'User Details',
+      headerTitleStyle: {
+        color: 'black',
+      },
+    });
+  }, [navigation]);
   
   const cameraRef = useRef(null);
 

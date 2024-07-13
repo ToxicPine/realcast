@@ -27,7 +27,7 @@ const TabOneScreen = () => {
         onEndReachedThreshold={0.1}
         ListFooterComponent={() =>
           isLoading && !isReachingEnd ? (
-            <ActivityIndicator size="large" color="#000000" />
+            <ActivityIndicator style={{ margin: 20 }} size="large" color="#000000" />
           ) : null
         }
         estimatedItemSize={125}

@@ -100,7 +100,7 @@ export default function ConversationScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={handleBackPress} style={{ paddingLeft: 10, paddingRight: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity onPress={handleBackPress} style={{ paddingLeft: 20, paddingRight: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
         </TouchableOpacity>
       ),

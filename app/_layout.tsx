@@ -6,6 +6,7 @@ import { NeynarProvider } from 'farcasterkit-react-native';
 import { useEffect } from 'react';
 import { useColorScheme, StyleSheet } from 'react-native';
 import GuestHeaderLeft from '../components/GuestHeaderLeft';
+import { CameraApp } from '../app/(tabs)/camera';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -64,6 +65,13 @@ function RootLayoutNav() {
             headerLeft: GuestHeaderLeft, 
             headerStyle: styles.headerStyle 
           }}
+        />
+        <Stack.Screen 
+          name="Camera" 
+          options={{ 
+            headerShown: true, 
+            title: 'Camera' 
+          }} 
         />
       </Stack>
     </ThemeProvider>
