@@ -2,7 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 import { Link, useNavigation, useRouter } from 'expo-router';
 import React from 'react';
-import { Text, ScrollView, Alert, TouchableOpacity, View, Pressable } from 'react-native';
+import { Text, ScrollView, Alert, TouchableOpacity, View, Pressable, StyleSheet } from 'react-native';
 import { LOCAL_STORAGE_KEYS } from '../constants/Farcaster';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLogin } from 'farcasterkit-react-native';
@@ -48,13 +48,13 @@ const HomeHeaderRight = () => {
       if(name === 'index' && currentRoute.name === 'index'){
         return true
       }
-      else if(name === 'trending' && currentRoute.name === 'channel' && currentRoute.params.type === 'trending'){
+      else if(name === 'trending' && currentRoute.name === 'channel' && currentRoute.params?.type === 'trending'){
         return true
       }
-      else if(name === DEV_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params.parent_url === DEV_CHANNEL_URL){
+      else if(name === DEV_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === DEV_CHANNEL_URL){
         return true
       }
-      else if(name === PURPLE_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params.parent_url === PURPLE_CHANNEL_URL){
+      else if(name === PURPLE_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === PURPLE_CHANNEL_URL){
         return true
       }
     }
@@ -66,29 +66,61 @@ const HomeHeaderRight = () => {
   }
 
   return (
-    <View style={{display: 'flex', flexDirection: 'row', gap: 2, paddingTop: '2.5%', paddingBottom: '2.5%' }}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: 'row', gap: 24, marginRight: 50 }}>
+    <View style={styles.headerContainer}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContainer}>
           <Link href="/(tabs)" asChild>
-            <Text style={{ fontSize, fontWeight: 'normal', opacity: isSelected('index') ? 1 : 0.7 }}>Home</Text>
+            <Text style={[styles.linkText, { opacity: isSelected('index') ? 1 : 0.7 }]}>Home</Text>
           </Link>
           <Link href="/(tabs)/channel?type=trending" asChild>
-            <Text style={{ fontSize, fontWeight: 'normal', opacity: isSelected('trending') ? 1 : 0.7 }}>Trending</Text>
+            <Text style={[styles.linkText, { opacity: isSelected('trending') ? 1 : 0.7 }]}>Trending</Text>
           </Link>
           <Link href={`/(tabs)/channel?type=channel&parent_url=${DEV_CHANNEL_URL}`} asChild>
-            <Text style={{ fontSize, fontWeight: 'normal', opacity: isSelected(DEV_CHANNEL_URL) ? 1 : 0.7 }}>/dev</Text>
+            <Text style={[styles.linkText, { opacity: isSelected(DEV_CHANNEL_URL) ? 1 : 0.7 }]}>/dev</Text>
           </Link>
           <Link href={`/(tabs)/channel?type=channel&parent_url=${PURPLE_CHANNEL_URL}`} asChild>
-            <Text style={{ fontSize, fontWeight: 'normal', opacity: isSelected(PURPLE_CHANNEL_URL) ? 1 : 0.7 }}>Purple</Text>
+            <Text style={[styles.linkText, { opacity: isSelected(PURPLE_CHANNEL_URL) ? 1 : 0.7 }]}>Purple</Text>
           </Link>
           <Pressable onPress={() => handlePressNotAvailable('Logout')}>
-            <Text style={{ color: 'red', fontSize, fontWeight: 'normal', opacity: 0.7 }}>Logout</Text>
+            <Text style={[styles.linkText, styles.logoutText]}>Logout</Text>
           </Pressable>
     </ScrollView>
       <Pressable onPress={() => handlePressNotAvailable('Search')}>
-        <FontAwesome name="search" size={15} color="#565555" style={{paddingTop: 5, paddingLeft: 10, paddingRight: 15}} />
+        <FontAwesome name="search" size={15} color="#565555" style={styles.searchIcon} />
       </Pressable>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    paddingTop: 16,
+    paddingBottom: 16,
+    fontSize: 16,
+  },
+  scrollViewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+    marginRight: 50,
+  },
+  linkText: {
+    fontSize: 16,
+    fontWeight: 'normal',
+  },
+  logoutText: {
+    color: 'red',
+    fontSize: 16,
+    fontWeight: 'normal',
+  },
+  searchIcon: {
+    paddingTop: 5,
+    paddingLeft: 10,
+    paddingRight: 15,
+  },
+});
 
 export default HomeHeaderRight;

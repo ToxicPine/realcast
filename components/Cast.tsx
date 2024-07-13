@@ -2,13 +2,15 @@ import _ from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useLogin, useReaction } from 'farcasterkit-react-native'
 import { Link } from 'expo-router'
+import { useNavigation } from '@react-navigation/native'
 
 const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
   const { farcasterUser } = useLogin()
   const postReaction = useReaction()
+  const navigation = useNavigation()
   const [reactions, setReactions] = useState<Reactions>({
     likes: [],
     recasts: [],
@@ -57,7 +59,7 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
 
     // Render images
     return allMatches.map((url) => (
-      <Image key={url} source={{ uri: url }} style={styles.image} />
+      <Image key={url} source={{ uri: url }} style={imageStyles.image} />
     ))
   }
 
@@ -65,37 +67,41 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
     addSuffix: true,
   })
   return (
-    <Link href={`/conversation?hash=${cast.hash}`}>
-      <View style={styles.castContainer}>
+    <TouchableOpacity onPress={() => navigation.navigate('conversation', { hash: cast.hash })}>
+      <View style={containerStyles.castContainer}>
         <Image
           source={{ uri: cast.author.pfp_url ?? '' }}
-          style={styles.pfpImage}
+          style={imageStyles.pfpImage}
         />
-        <View style={styles.contentContainer}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.displayName}>
-              {cast.author.display_name} ·{' '}
-              <Text style={styles.timestamp}>
-                {_.replace(relativeTime, 'about ', '')}
-              </Text>
+        <View style={containerStyles.contentContainer}>
+          <View style={containerStyles.headerContainer}>
+            <Text style={textStyles.displayName}>
+              {cast.author.display_name}
+            </Text>
+            <Text style={textStyles.timestamp}>
+              {_.replace(relativeTime, 'about ', '')}
             </Text>
             {/* <Text style={styles.timestamp}>{_.replace(relativeTime, 'about ', '')}</Text> */}
           </View>
-          <Text style={styles.castText}>{cast.text}</Text>
+          <Text style={textStyles.castText}>{cast.text}</Text>
           {renderImages()}
-          <View style={styles.reactionsContainer}>
-            <View style={styles.reactionsGroupContainer}>
-              <FontAwesome name="comment-o" size={11} color="black" />
-              <Text style={styles.reactionText}> {cast.replies.count}</Text>
+          <View style={containerStyles.reactionsContainer}>
+            <View style={containerStyles.reactionsGroupContainer}>
+              <MaterialIcons 
+              name="comment" 
+              size={16} 
+              color="black" 
+              />
+              <Text style={textStyles.reactionText}> {cast.replies.count}</Text>
             </View>
             <TouchableOpacity
               disabled={!farcasterUser}
               onPress={() => handleReaction('recast', cast.hash)}
             >
-              <View style={styles.reactionsGroupContainer}>
-                <FontAwesome
-                  name="retweet"
-                  size={11}
+              <View style={containerStyles.reactionsGroupContainer}>
+                <MaterialIcons
+                  name="repeat"
+                  size={16}
                   color={
                     reactions.recasts.some((r) => r.fid === farcasterUser?.fid)
                       ? 'green'
@@ -103,7 +109,7 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
                   }
                   style={{ opacity: farcasterUser ? 100 : 50 }}
                 />
-                <Text style={styles.reactionText}>
+                <Text style={textStyles.reactionText}>
                   {' '}
                   {reactions.recasts.length}
                 </Text>
@@ -113,14 +119,14 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
               disabled={!farcasterUser}
               onPress={() => handleReaction('like', cast.hash)}
             >
-              <View style={styles.reactionsGroupContainer}>
-                <FontAwesome
+              <View style={containerStyles.reactionsGroupContainer}>
+                <MaterialIcons
                   name={
                     reactions.likes.some((r) => r.fid === farcasterUser?.fid)
-                      ? 'heart'
-                      : 'heart-o'
+                      ? 'favorite'
+                      : 'favorite-border'
                   }
-                  size={11}
+                  size={16}
                   color={
                     reactions.likes.some((r) => r.fid === farcasterUser?.fid)
                       ? 'red'
@@ -128,7 +134,7 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
                   }
                   style={{ opacity: farcasterUser ? 100 : 50 }}
                 />
-                <Text style={styles.reactionTextFirst}>
+                <Text style={textStyles.reactionTextFirst}>
                   {' '}
                   {reactions.likes.length}
                 </Text>
@@ -137,96 +143,94 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
           </View>
         </View>
       </View>
-    </Link>
+    </TouchableOpacity>
   )
 }
 
-const styles = StyleSheet.create({
+const containerStyles = StyleSheet.create({
   castContainer: {
     borderBottomWidth: 1,
     borderColor: '#eaeaea',
     flexDirection: 'row',
-    padding: 10,
+    padding: 16,
     zIndex: -50,
     width: '100%',
-  },
-  castText: {
-    color: '#333',
-    fontSize: 14,
-    lineHeight: 18,
-    paddingRight: 8,
-    paddingBottom: 3,
-  },
-  container: {
-    backgroundColor: '#fff',
-    flex: 1,
-    justifyContent: 'space-between',
   },
   contentContainer: {
     flex: 1,
     justifyContent: 'center',
   },
-  displayName: {
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  flashList: {
-    backgroundColor: '#fff',
-  },
   headerContainer: {
-    alignItems: 'center',
+    display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-  },
-  icon: {
-    resizeMode: 'contain',
-  },
-  pfpImage: {
-    borderRadius: 25,
-    height: 30,
-    marginLeft: 10,
-    marginRight: 15,
-    width: 30,
-  },
-  reactionText: {
-    color: '#000',
-    fontSize: 11,
-  },
-  reactionTextFirst: {
-    color: '#000',
-    fontSize: 11,
+    paddingBottom: 4,
+    paddingTop: 2,
+    gap: 2
   },
   reactionsContainer: {
-    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    gap: 24,
-    marginTop: 4,
-    paddingBottom: 1,
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 16,
   },
   reactionsGroupContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
     marginRight: 4,
+    gap: 4
+  },
+})
+
+const textStyles = StyleSheet.create({
+  castText: {
+    color: '#333',
+    fontSize: 16,
+    lineHeight: 20,
+    paddingTop: 0,
+    paddingRight: 8,
+    paddingBottom: 3,
+  },
+  displayName: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: 'bold',
   },
   timestamp: {
     color: '#666',
     fontSize: 12,
     fontWeight: '300',
-    paddingBottom: 4,
     paddingRight: 6,
   },
-  imageContainer: {
-    flexDirection: 'row',
-    marginTop: 4,
+  reactionText: {
+    color: '#000',
+    fontSize: 12,
+  },
+  reactionTextFirst: {
+    color: '#000',
+    fontSize: 12,
+  },
+})
+
+const imageStyles = StyleSheet.create({
+  pfpImage: {
+    borderRadius: 18,
+    height: 36,
+    width: 36,
+    marginLeft: 0,
+    marginRight: 16,
   },
   image: {
-    width: 100, // Set your desired image width
+    width: '100%', // Set your desired image width
     height: 100, // Set your desired image height
+    marginTop: 8,
     marginRight: 4,
     paddingBottom: 4,
   },
 })
 
-export default Cast
+export default Cast;

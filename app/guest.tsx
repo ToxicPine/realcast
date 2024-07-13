@@ -29,6 +29,7 @@ const GuestScreen = () => {
             <ActivityIndicator size="large" color="#000000" />
           ) : null
         }
+        estimatedItemSize={125}
       />
     </View>
   )

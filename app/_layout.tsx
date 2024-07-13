@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { NeynarProvider } from 'farcasterkit-react-native';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, StyleSheet } from 'react-native';
 import GuestHeaderLeft from '../components/GuestHeaderLeft';
 
 export {
@@ -55,9 +55,27 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="guest" options={{ headerShown: true, title: 'Feed', headerTitleStyle: { color: 'black' }, headerLeft: GuestHeaderLeft, headerStyle: { backgroundColor: 'white'} }}/>
+        <Stack.Screen 
+          name="guest" 
+          options={{ 
+            headerShown: true, 
+            title: 'Feed', 
+            headerTitleStyle: styles.headerTitleStyle, 
+            headerLeft: GuestHeaderLeft, 
+            headerStyle: styles.headerStyle 
+          }}
+        />
       </Stack>
     </ThemeProvider>
     </NeynarProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  headerTitleStyle: {
+    color: 'black',
+  },
+  headerStyle: {
+    backgroundColor: 'white',
+  },
+});

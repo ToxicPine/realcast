@@ -217,6 +217,7 @@ export default function ConversationScreen() {
         data={thread}
         renderItem={renderCast}
         keyExtractor={item => item.hash}
+        estimatedItemSize={125}
       />
       {thread.length > 0 && <ComposeCast hash={thread[0].hash} />}
     </View>

@@ -30,6 +30,7 @@ const TabOneScreen = () => {
             <ActivityIndicator size="large" color="#000000" />
           ) : null
         }
+        estimatedItemSize={125}
       />
       <ComposeCast />
     </View>

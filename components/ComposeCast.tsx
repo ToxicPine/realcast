@@ -1,18 +1,79 @@
 import React, { useState, useCallback } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
-// todo: fix cannot find module error for images
-import CastIcon from '../assets/images/castIcon.png';
+import { View, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../constants/Farcaster';
 import { useLogin } from 'farcasterkit-react-native';
 // import { useLogin } from '../providers/NeynarProvider';
 
 const ComposeCast = ({ hash }: { hash?: string }) => {
-  const DEFAULT_PLACEHOLDER = 'cast something...';
+  const DEFAULT_PLACEHOLDER = 'Type to Cast...';
   const [text, setText] = useState<string>('');
   const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
+  const [isInputVisible, setInputVisible] = useState<boolean>(false);
   const { farcasterUser } = useLogin();
 
-  const handleCast = useCallback(async () => {
+  const handleCast = useHandleCast({ text, setText, setPlaceholder, farcasterUser, hash });
+
+  const handleOutsidePress = (event: any) => {
+    if (event.target !== textInputRef.current) {
+      setInputVisible(false);
+      Keyboard.dismiss();
+    }
+  };
+
+  const textInputRef = React.useRef<TextInput>(null);
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    >
+      <TouchableWithoutFeedback onPress={handleOutsidePress}>
+          {isInputVisible ? (
+            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <View style={styles.composeInputContainer}>
+                <TextInput
+                  ref={textInputRef}
+                  value={text}
+                  onChangeText={setText}
+                  placeholder={placeholder}
+                  placeholderTextColor={"#fff"} // Changed placeholder text color to white
+                  style={styles.composeInput}
+                />
+                <TouchableOpacity onPress={handleCast} style={styles.composeButton}>
+                  <MaterialIcons name="send" size={24} color="white" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.roundButton}
+              onPress={() => setInputVisible(true)}
+            >
+              <MaterialIcons name="edit" size={24} color="white" />
+            </TouchableOpacity>
+          )}
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  );
+};
+
+export const useHandleCast = ({
+  text,
+  setText,
+  setPlaceholder,
+  farcasterUser,
+  hash,
+}: {
+  text: string;
+  setText: React.Dispatch<React.SetStateAction<string>>;
+  setPlaceholder: React.Dispatch<React.SetStateAction<string>>;
+  farcasterUser: { signer_uuid: string } | null;
+  hash?: string;
+}) => {
+  const DEFAULT_PLACEHOLDER = 'Type to Cast...';
+
+  return useCallback(async () => {
     if (farcasterUser) {
       try {
         const respBody = {
@@ -40,32 +101,7 @@ const ComposeCast = ({ hash }: { hash?: string }) => {
         console.error('Could not send the cast', error);
       }
     }
-  }, [text, farcasterUser]);
-
-  return (
-    <KeyboardAvoidingView
-    style={{ marginTop: 0 }}
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-    >
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <View style={styles.composeInputContainer}>
-            <TextInput
-              value={text}
-              onChangeText={setText}
-              placeholder={placeholder}
-              placeholderTextColor={"#000"}
-              style={styles.composeInput}
-            />
-            <TouchableOpacity onPress={handleCast} style={styles.composeButton}>
-              <Image source={CastIcon} style={styles.icon} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
-  );
+  }, [text, farcasterUser, hash, setText, setPlaceholder]);
 };
 
 const styles = StyleSheet.create({
@@ -76,22 +112,41 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   composeInputContainer: {
-    backgroundColor: '#F2F2F2',
-    borderRadius: 20,
+    display: 'flex',
+    position: 'absolute',
+    bottom: 0, left: 0, right: 0,
     flexDirection: 'row',
-    margin: 10,
-    minHeight: 40,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginBottom: 25,
+    justifyContent: 'flex-end',
+    backgroundColor: '#2f2f2f',
+    borderRadius: 64,
+    margin: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   composeInput: {
+    color: 'white',
     flex: 1,
   },
-  icon: {
-    height: 24,
-    resizeMode: 'contain',
-    width: 24,
+  roundButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 64,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
 });
 

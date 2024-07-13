@@ -9,7 +9,7 @@ export default function ConnectAsGuest() {
   return (
     <View>
       <Pressable onPress={() => navigation.navigate('guest')}>
-        <Text style={styles.text}>or View as Guest</Text>
+        <Text style={styles.text}>View as Guest, or</Text>
       </Pressable>
     </View>
   );

@@ -53,9 +53,9 @@ export default function SignInWithNeynar() {
         successCallback={handleSignin}
         errorCallback={handleError}
         buttonStyles={styles.neynarSignInBtn}
-        paddingVertical={0}
-        paddingHorizontal={0}
-        width={150}
+        textStyles={styles.neynarSignInText}
+        margin={0}
+        borderRadius={16}
       />
     </View>
   );
@@ -63,15 +63,25 @@ export default function SignInWithNeynar() {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       alignItems: 'flex-start',
       marginTop: 0,
       height: 'auto',
-      minHeight: '10%',
-      right: '5%'
     },
     neynarSignInBtn: {
-      marginRight: '20%',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      padding: 0,
+      margin: 0,
+      height: 'auto',
+      width: 'auto',
+      backgroundColor: 'black',
+      lineHeight: 16,
+    },
+    neynarSignInText: {
+      marginLeft: 16,
+      color: 'white',
+      fontSize: 16,
+      fontWeight: 'medium'
     }
 });
   

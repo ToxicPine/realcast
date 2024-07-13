@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Pressable, Text } from 'react-native';
-
-// import { API_URL } from '../constants/Farcaster';
-
-import { Link, useNavigation } from 'expo-router';
-import { useLogin } from 'farcasterkit-react-native';
+import { View, Image, StyleSheet, Pressable } from 'react-native';
+import { useNavigation } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const GuestHeaderLeft = () => {
   const navigation = useNavigation();
@@ -12,7 +9,7 @@ const GuestHeaderLeft = () => {
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.goBack()}>
-        <Text>Back</Text>
+        <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
       </Pressable>
     </View>
   );
@@ -21,6 +18,13 @@ const GuestHeaderLeft = () => {
 const styles = StyleSheet.create({
   container: {
     paddingLeft: 10,
+    paddingRight: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'black',
   }
 });
 
