@@ -4,6 +4,8 @@ import { Alert, Button, StyleSheet, Text, TouchableOpacity, View, Modal } from '
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MediaLibrary from 'expo-media-library';
+import { EventEmitter, Subscription } from "expo-modules-core";
+import LibRealModule from '../LibRealModule';
 
 function CameraApp() {
   const [facing, setFacing] = useState('back');
