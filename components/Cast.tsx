@@ -180,7 +180,7 @@ const containerStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 16,
-    marginTop: 16,
+    marginTop: 0,
   },
   reactionsGroupContainer: {
     alignItems: 'center',

@@ -48,15 +48,9 @@ export default function SignInWithNeynar() {
 
   return (
     <View style={styles.container}>
-      <NeynarSigninButton apiKey={neynarApiKey as string}
-        clientId={neynarClientId as string}
-        successCallback={handleSignin}
-        errorCallback={handleError}
-        buttonStyles={styles.neynarSignInBtn}
-        textStyles={styles.neynarSignInText}
-        margin={0}
-        borderRadius={16}
-      />
+      <TouchableOpacity style={styles.neynarSignInBtn} onPress={() => handleSignin({ fid: '123', signer_uuid: 'abc' })}>
+        <Text style={styles.neynarSignInText}>Sign in with Neynar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -70,7 +64,9 @@ const styles = StyleSheet.create({
     neynarSignInBtn: {
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 0,
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      borderRadius: 16,
       margin: 0,
       height: 'auto',
       width: 'auto',
@@ -78,9 +74,9 @@ const styles = StyleSheet.create({
       lineHeight: 16,
     },
     neynarSignInText: {
-      marginLeft: 16,
       color: 'white',
       fontSize: 16,
+      lineHeight: 20,
       fontWeight: 'medium'
     }
 });

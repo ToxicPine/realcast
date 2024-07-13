@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import ComposeCast from '../../components/ComposeCast';
 import { Link, useNavigation } from 'expo-router';
+import { Pressable } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRoute } from '@react-navigation/native';
 import { useLogin } from 'farcasterkit-react-native';
 
@@ -31,14 +33,14 @@ const UserScreen = () => {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={handleBackPress}>
-          <Text style={{paddingLeft: 15, fontWeight: '300'}}>Back</Text>
+        <TouchableOpacity onPress={handleBackPress} style={{ paddingLeft: 10, paddingRight: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
         </TouchableOpacity>
       ),
-      title: fname,
+      title: 'User Details',
       headerTitleStyle: {
-        color: 'black'
-      }
+        color: 'black',
+      },
     });
   }, [navigation]);
 
@@ -49,9 +51,9 @@ const UserScreen = () => {
       <View style={styles.detailsContainer}>
         <Image source={{ uri: farcasterUser.pfp }} style={styles.pfpImage} alt={`PFP for @${farcasterUser.fname}`} width={48} height={48} />
         <View style={styles.detailsNameContainer}>
-          <Text>{farcasterUser.displayName}</Text>
-          <Text>@{farcasterUser.fname}</Text>
-          <Text style={{maxWidth: '97%', paddingTop: 16}}>{farcasterUser.profile.bio}</Text>
+          <Text style={styles.detailsName}>{farcasterUser.displayName}</Text>
+          <Text style={styles.detailsUsername}>@{farcasterUser.fname}</Text>
+          <Text style={styles.detailsBio}>{farcasterUser.profile.bio}</Text>
         </View>
       </View>
       </>
@@ -72,15 +74,19 @@ const styles = StyleSheet.create({
     borderRadius: 36,
   },
   detailsContainer: {
-    paddingTop: 12,
-    padding: 18,
+    padding: 16,
     flex: 1,
     flexDirection: 'row'
   },
   detailsNameContainer: {
     flexDirection: 'column',
-    paddingTop: 5,
+    paddingLeft: 16,
+    paddingTop: 0,
     gap: 2
+  },
+  detailsName: {
+    fontSize: 16,
+    fontWeight: 'bold'
   },
 });
 
