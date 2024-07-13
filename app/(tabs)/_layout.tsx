@@ -65,6 +65,13 @@ export default function TabLayout() {
             title: '',
           }}
         />
+        <Tabs.Screen 
+          name="camera" 
+          options={{ 
+            headerShown: true, 
+            title: 'Camera' 
+          }} 
+        />
       </Tabs>
   );
 }

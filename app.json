@@ -4,6 +4,7 @@
     "slug": "realcast",
     "version": "0.0.17",
     "orientation": "portrait",
+    "platforms": ["ios", "android"],
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -23,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.baldguy.realcast"
     },
     "web": {
       "bundler": "metro",
@@ -44,6 +46,6 @@
         "projectId": "7831dd30-fdb8-431f-83b4-7d9fc87c134e"
       }
     },
-    "owner": "a.halilil"
+    "owner": "realcast"
   }
 }

@@ -2,11 +2,11 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useEffect, useRef } from 'react';
 import { Alert, Button, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MediaLibrary from 'expo-media-library';
 
-export const CameraApp = () => {
-  const [type, setType] = useState('back');
+function CameraApp() {
+  const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewerVisible, setIsViewerVisible] = useState(false);
@@ -14,6 +14,9 @@ export const CameraApp = () => {
   const [cameraRatio, setCameraRatio] = useState(["1:1", 1]); 
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const { type: routeType } = route.params;
+
   const handleBackPress = () => {
     navigation.navigate('index');
   };
@@ -25,7 +28,7 @@ export const CameraApp = () => {
           <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
         </TouchableOpacity>
       ),
-      title: 'User Details',
+      title: 'Attested Camera',
       headerTitleStyle: {
         color: 'black',
       },
@@ -38,14 +41,11 @@ export const CameraApp = () => {
     prepareRatio();
   }, []);
 
-  /* @hide if (!permission) ... */
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
-  /* @end */
 
-  /* @hide if (!permission.granted) ... */
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -60,7 +60,6 @@ export const CameraApp = () => {
       </View>
     );
   }
-  /* @end */
   
   async function prepareRatio() {
     if (cameraRef.current) {
@@ -74,9 +73,8 @@ export const CameraApp = () => {
   };
 
   // Toggle Camera
-  async function toggleCameraType() {
-    setType(current => (current === 'back' ? 'front' : 'back'));
-    await prepareRatio();
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
   // Take Picture
@@ -103,17 +101,14 @@ export const CameraApp = () => {
         onCameraReady={prepareRatio}
         ratio={cameraRatio[0]}
         style={{ flex: 0, aspectRatio: cameraRatio[1] }}  
-        type={type}
+        facing={facing}
       >
       </CameraView>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={pickImage}>
-          <MaterialCommunityIcons name="image" size={24} color="white" />
-        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={takePicture}>
           <MaterialCommunityIcons name="camera-iris" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
           <MaterialCommunityIcons name="camera-flip" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -174,3 +169,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default CameraApp;

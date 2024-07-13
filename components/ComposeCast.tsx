@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../constants/Farcaster';
 import { useLogin } from 'farcasterkit-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Link } from 'expo-router';
 // import { useLogin } from '../providers/NeynarProvider';
 
 const ComposeCast = ({ hash }: { hash?: string }) => {
@@ -34,9 +35,9 @@ const ComposeCast = ({ hash }: { hash?: string }) => {
           {isInputVisible ? (
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
               <View style={styles.composeInputContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('Camera')} style={styles.cameraButton}> 
+                <Link href="camera" style={styles.cameraButton}>
                   <MaterialIcons name="photo-camera" size={24} color="white" />
-                </TouchableOpacity>
+                </Link>
                 <TextInput
                   ref={textInputRef}
                   value={text}
