@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { formatDistanceToNow } from 'date-fns';
 import _ from 'lodash';
-import { FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import ComposeCast from '../../components/ComposeCast';
 import { useLogin } from 'farcasterkit-react-native';
@@ -88,42 +88,33 @@ export default function ConversationScreen() {
   const neynarApiKey = process.env.EXPO_PUBLIC_NEYNAR_API_KEY;
 
   const handleBackPress = () => {
-    // if(navigationParentHash === null || navigationParentHash === hash){
-    //   console.log("back to index, here's last value ", navigationParentHash);
-    //   navigation.navigate('index');
-    // }
-    // else{
-    //   navigation.setParams({ hash: navigationParentHash })
-    //   setNavigationParentHash(null);
-    // }
     navigation.navigate('index');
     setNavigationParentHash(null);
   };
 
   const handleCastPress = (childHash: string) => {
-    navigation.setParams({ hash: childHash })
+    navigation.setParams({ hash: childHash });
     setNavigationParentHash(childHash);
-  }
+  };
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={handleBackPress}>
-          <Text style={{paddingLeft: 15, fontWeight: '300'}}>Back</Text>
+        <TouchableOpacity onPress={handleBackPress} style={{ paddingLeft: 10, paddingRight: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="arrow-back" size={24} color="black" style={{ fontWeight: '400' }} />
         </TouchableOpacity>
       ),
       title: 'Thread',
       headerTitleStyle: {
-        color: 'black'
-      }
+        color: 'black',
+      },
     });
   }, [hash, navigation]);
 
   useEffect(() => {
-    // TOOD: move to farcasterkit-react-native
     async function fetchThread() {
-      if (thread.some(cast => cast.hash === hash)) {
-        const itemIndex = thread.findIndex(cast => cast.hash === hash);
+      if (thread.some((cast) => cast.hash === hash)) {
+        const itemIndex = thread.findIndex((cast) => cast.hash === hash);
         if (itemIndex > 0) {
           const newThread = thread.slice(itemIndex);
           if (newThread[0].hash !== parentHash) {
@@ -138,8 +129,8 @@ export default function ConversationScreen() {
         try {
           const response = await fetch(url, {
             headers: {
-              'Accept': 'application/json',
-              'api_key': neynarApiKey as string,
+              Accept: 'application/json',
+              api_key: neynarApiKey as string,
             },
             method: 'GET',
           });
@@ -174,40 +165,42 @@ export default function ConversationScreen() {
 
   const renderCast = ({ item: cast }) => {
     const renderImages = () => {
-      // Regex to match image URLs
       const regex = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif)/g;
-    
-      // Find matches in cast.text
       const textMatches = cast.text.match(regex) || [];
-    
-      // Extract URLs from cast.embeds
       const embedMatches = cast.embeds
-        .filter(embed => embed.url && embed.url.match(regex))
-        .map(embed => embed.url);
-    
-      // Combine and de-duplicate URLs from text and embeds
+        .filter((embed) => embed.url && embed.url.match(regex))
+        .map((embed) => embed.url);
       const allMatches = Array.from(new Set([...textMatches, ...embedMatches]));
-    
-      // Render images
-      return allMatches.map((url) => (
-        <Image key={url} source={{ uri: url }} style={styles.image} />
-      ));
-    };
-    return(
-    <TouchableOpacity onPress={() => handleCastPress(cast.hash)}>
-      <View style={styles.castContainer}>
-        <Image source={{ uri: cast.author.pfp.url }} style={styles.pfpImage} />
-        <View style={styles.contentContainer}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.displayName}>{cast.author.displayName}</Text>
-            <Text style={styles.timestamp}>{_.replace(formatDistanceToNow(new Date(cast.timestamp)), 'about ', '')} ago</Text>
-          </View>
-          <Text style={styles.castText}>{cast.text}</Text>
-          {renderImages()}
+      return (
+        <View style={imageStyles.imagesContainer}>
+          {allMatches.map((url) => (
+            <View key={url} style={imageStyles.imageContainer}>
+              <Image source={{ uri: url }} style={imageStyles.image} />
+            </View>
+          ))}
         </View>
-      </View>
-    </TouchableOpacity>
-   )
+      );
+    };
+
+    const relativeTime = formatDistanceToNow(new Date(cast.timestamp), {
+      addSuffix: true,
+    });
+
+    return (
+      <TouchableOpacity onPress={() => handleCastPress(cast.hash)}>
+        <View style={containerStyles.castContainer}>
+          <Image source={{ uri: cast.author.pfp.url }} style={imageStyles.pfpImage} />
+          <View style={containerStyles.contentContainer}>
+            <View style={containerStyles.headerContainer}>
+              <Text style={textStyles.displayName}>{cast.author.displayName}</Text>
+              <Text style={textStyles.timestamp}>{_.replace(relativeTime, 'about ', '')}</Text>
+            </View>
+            <Text style={textStyles.castText}>{cast.text}</Text>
+            {renderImages()}
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -216,13 +209,115 @@ export default function ConversationScreen() {
         contentContainerStyle={styles.scrollView}
         data={thread}
         renderItem={renderCast}
-        keyExtractor={item => item.hash}
+        keyExtractor={(item) => item.hash}
         estimatedItemSize={125}
       />
-      {thread.length > 0 && <Cast hash={thread[0].hash} />}
+      {thread.length > 0 && <ComposeCast hash={thread[0].hash} />}
     </View>
   );
 }
+
+const containerStyles = StyleSheet.create({
+  castContainer: {
+    borderBottomWidth: 1,
+    borderColor: '#eaeaea',
+    flexDirection: 'row',
+    padding: 16,
+    zIndex: -50,
+    width: '100%',
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingBottom: 4,
+    paddingTop: 2,
+    gap: 2,
+  },
+  reactionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 16,
+  },
+  reactionsGroupContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginRight: 4,
+    gap: 4,
+  },
+});
+
+const textStyles = StyleSheet.create({
+  castText: {
+    color: '#333',
+    fontSize: 16,
+    lineHeight: 20,
+    paddingTop: 0,
+    paddingRight: 8,
+    paddingBottom: 3,
+  },
+  displayName: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: 'bold',
+  },
+  timestamp: {
+    color: '#666',
+    fontSize: 12,
+    fontWeight: '300',
+    paddingRight: 6,
+  },
+  reactionText: {
+    color: '#000',
+    fontSize: 12,
+  },
+  reactionTextFirst: {
+    color: '#000',
+    fontSize: 12,
+  },
+});
+
+const imageStyles = StyleSheet.create({
+  pfpImage: {
+    borderRadius: 18,
+    height: 36,
+    width: 36,
+    marginLeft: 0,
+    marginRight: 16,
+  },
+  imagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: 400,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    backgroundColor: '#000000',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -231,45 +326,5 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     backgroundColor: '#ffffff',
-  },
-  castContainer: {
-    borderBottomWidth: 1,
-    borderColor: '#eaeaea',
-    flexDirection: 'row',
-    padding: 10,
-    paddingLeft: 15,
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 10,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  displayName: {
-    fontWeight: 'bold',
-  },
-  timestamp: {
-    color: '#999',
-  },
-  castText: {
-    color: '#000000',
-  },
-  pfpImage: {
-    borderRadius: 25,
-    height: 25,
-    width: 25,
-    marginRight: 2,
-    marginTop: 9
-  },
-  image: {
-    width: 100, // Set your desired image width
-    height: 100, // Set your desired image height
-    marginRight: 4,
-    paddingBottom: 4,
   },
 });
