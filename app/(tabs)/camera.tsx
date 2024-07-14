@@ -169,7 +169,7 @@ function CameraApp() {
         text: text,
         channel_id: 'farcaster',
         idem: generateIdem(),
-        parent_author_fid: 0
+        parent_author_fid: 'arbion'
       };
       const options = {
         method: 'POST',

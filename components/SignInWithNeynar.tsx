@@ -54,7 +54,7 @@ export default function SignInWithNeynar() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.neynarSignInBtn} onPress={() => handleSignin({ fid: process.env.EXPO_PUBLIC_NEYNAR_FID || 'arbion', signer_uuid: process.env.EXPO_PUBLIC_NEYNAR_SIGNER_UUID || '7efc93ab-d667-4f45-89c5-ad2858af5ea2', is_authenticated: true })}>
+      <TouchableOpacity style={styles.neynarSignInBtn} onPress={() => handleSignin({ fid: '123', signer_uuid: 'abc', is_authenticated: true })}>
         <Text style={styles.neynarSignInText}>Sign in with Neynar</Text>
       </TouchableOpacity>
     </View>
@@ -86,4 +86,3 @@ const styles = StyleSheet.create({
       fontWeight: 'medium'
     }
 });
-  
