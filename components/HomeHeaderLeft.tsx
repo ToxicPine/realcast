@@ -12,7 +12,9 @@ const HomeHeaderLeft = () => {
     <View style={styles.container}>
       {farcasterUser && farcasterUser.pfp && 
       <Link href={`/user?fname=${farcasterUser?.fname}`}>
-        <Image source={{ uri: farcasterUser.pfp }} style={styles.image} />
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: farcasterUser.pfp }} style={styles.image} />
+        </View>
       </Link>
       }
     </View>
@@ -21,13 +23,21 @@ const HomeHeaderLeft = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 15,
+    marginLeft: 15,
+    marginVertical: 'auto',
   },
-  image: {
-    borderRadius: 15,
+  imageContainer: {
+    backgroundColor: 'black',
+    borderRadius: 4,
     height: 30,
     width: 30,
-    zIndex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+    borderRadius: 4,
   }
 });
 

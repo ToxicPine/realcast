@@ -14,49 +14,47 @@ const HomeHeaderRight = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const currentRoute = useRoute();
-  const fontSize = 22;
   const { setFarcasterUser } = useLogin();
 
-  const handlePressNotAvailable = (section: string) => {
+  const handleLogout = () => {
+     (async () => {
+      try {
+        await AsyncStorage.removeItem(LOCAL_STORAGE_KEYS.FARCASTER_USER);
+        setFarcasterUser(null);
+        router.push('/');
+        Alert.alert(
+          'Logged Out',
+          `You have been logged out.`,
+          [{ onPress: () => console.log('Alert closed'), text: 'Close' }]
+        );
+      } catch (error) {
+        console.error("Failed to remove item from AsyncStorage", error);
+      }
+    })();
+  }
+
+  const handleSearch = () => {
     Alert.alert(
       'Coming Soon',
-      `${section} section will be available soon.`,
+      `Search will be available soon.`,
       [{ onPress: () => console.log('Alert closed'), text: 'Close' }]
     );
-  };
-
-  // this is 90% done but wasn't fully working so commented it out in the meantime
-  // todo: add this logic directly to NeynarProvider
-  // const handleLogout = () => {
-  //   (async () => {
-  //     try {
-  //       await AsyncStorage.removeItem(LOCAL_STORAGE_KEYS.FARCASTER_USER);
-  //       setFarcasterUser(null);
-  //       router.push('/');
-  //     } catch (error) {
-  //       console.error("Failed to remove item from AsyncStorage", error);
-  //     }
-  //   })();
-  // }
-
-  // todo: fix this function, it's broken
+  }
   const isSelected = (name: string) => {
-    if(currentRoute === null){
-      return false
+    if (!currentRoute) {
+      return false;
     }
-    else{
-      if(name === 'index' && currentRoute.name === 'index'){
-        return true
-      }
-      else if(name === 'trending' && currentRoute.name === 'channel' && currentRoute.params?.type === 'trending'){
-        return true
-      }
-      else if(name === DEV_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === DEV_CHANNEL_URL){
-        return true
-      }
-      else if(name === PURPLE_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === PURPLE_CHANNEL_URL){
-        return true
-      }
+    if (name === 'index' && currentRoute.name === 'index') {
+      return true;
+    }
+    if (name === 'trending' && currentRoute.name === 'channel' && currentRoute.params?.type === 'trending') {
+      return true;
+    }
+    if (name === DEV_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === DEV_CHANNEL_URL) {
+      return true;
+    }
+    if (name === PURPLE_CHANNEL_URL && currentRoute.name === 'channel' && currentRoute.params?.parent_url === PURPLE_CHANNEL_URL) {
+      return true;
     }
     return false;
   }
@@ -69,24 +67,21 @@ const HomeHeaderRight = () => {
     <View style={styles.headerContainer}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContainer}>
           <Link href="/(tabs)" asChild>
-            <Text style={[styles.linkText, { opacity: isSelected('index') ? 1 : 0.7 }]}>Home</Text>
+            <Text style={[styles.linkText, isSelected('index') ? styles.selectedText : styles.unselectedText]}>Home</Text>
           </Link>
           <Link href="/(tabs)/channel?type=trending" asChild>
-            <Text style={[styles.linkText, { opacity: isSelected('trending') ? 1 : 0.7 }]}>Trending</Text>
+            <Text style={[styles.linkText, isSelected('trending') ? styles.selectedText : styles.unselectedText]}>Trending</Text>
           </Link>
           <Link href={`/(tabs)/channel?type=channel&parent_url=${DEV_CHANNEL_URL}`} asChild>
-            <Text style={[styles.linkText, { opacity: isSelected(DEV_CHANNEL_URL) ? 1 : 0.7 }]}>/dev</Text>
+            <Text style={[styles.linkText, isSelected(DEV_CHANNEL_URL) ? styles.selectedText : styles.unselectedText]}>/dev</Text>
           </Link>
           <Link href={`/(tabs)/channel?type=channel&parent_url=${PURPLE_CHANNEL_URL}`} asChild>
-            <Text style={[styles.linkText, { opacity: isSelected(PURPLE_CHANNEL_URL) ? 1 : 0.7 }]}>Purple</Text>
+            <Text style={[styles.linkText, isSelected(PURPLE_CHANNEL_URL) ? styles.selectedText : styles.unselectedText]}>Purple</Text>
           </Link>
-          <Pressable onPress={() => handlePressNotAvailable('Logout')}>
+          <Pressable onPress={() => handleLogout()}>
             <Text style={[styles.linkText, styles.logoutText]}>Logout</Text>
           </Pressable>
-    </ScrollView>
-      <Pressable onPress={() => handlePressNotAvailable('Search')}>
-        <FontAwesome name="search" size={15} color="#565555" style={styles.searchIcon} />
-      </Pressable>
+      </ScrollView>
     </View>
   );
 };
@@ -105,21 +100,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 24,
-    marginRight: 50,
+    marginRight: 48,
   },
   linkText: {
-    fontSize: 16,
-    fontWeight: 'normal',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   logoutText: {
     color: 'red',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'normal',
   },
   searchIcon: {
     paddingTop: 5,
     paddingLeft: 10,
     paddingRight: 15,
+  },
+  selectedText: {
+    color: 'blue',
+  },
+  unselectedText: {
+    color: 'gray',
   },
 });
 

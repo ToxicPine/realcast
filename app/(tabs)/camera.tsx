@@ -100,8 +100,14 @@ function CameraApp() {
         padding: 16,
       }}>
         <Text style={{ textAlign: 'center' }}>We Need Permission To Use The Camera and Media Library</Text>
-        <Button onPress={requestCameraPermission} title="Grant Camera Permission" />
-        <Button onPress={requestMediaPermission} title="Grant Media Permission" />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', gap: 8 }}>
+          {!cameraPermission.granted && (
+            <Button onPress={requestCameraPermission} title="Grant Camera Permission" />
+          )}
+          {!mediaPermission.granted && (
+            <Button onPress={requestMediaPermission} title="Grant Media Permission" />
+          )}
+        </View>
       </View>
     );
   }

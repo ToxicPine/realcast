@@ -228,7 +228,7 @@ const containerStyles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   headerContainer: {
     display: 'flex',

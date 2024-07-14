@@ -62,6 +62,11 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
         {allMatches.map((url) => (
           <View key={url} style={imageStyles.imageContainer}>
             <Image source={{ uri: url }} style={imageStyles.image} />
+            {true && (
+              <View style={imageStyles.securityIconContainer}>
+                <MaterialIcons name="security" size={20} color="white" />
+              </View>
+            )}
           </View>
         ))}
       </View>
@@ -222,6 +227,14 @@ const textStyles = StyleSheet.create({
 })
 
 const imageStyles = StyleSheet.create({
+  securityIconContainer: {
+    position: 'absolute',
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: 'green',
+    top: 8,
+    right: 8,
+  },
   pfpImage: {
     borderRadius: 18,
     height: 36,

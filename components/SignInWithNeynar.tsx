@@ -36,6 +36,12 @@ export default function SignInWithNeynar() {
       router.push('/(tabs)');
     }
   }, [warpcastUser]);
+  
+  useEffect(() => {
+    if (farcasterUser) {
+      router.push('/(tabs)');
+    }
+  }, [farcasterUser]);
 
   const handleSignin = async (data: ISuccessMessage) => {
     setFid(Number(data.fid));
