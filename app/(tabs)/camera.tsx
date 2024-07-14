@@ -155,21 +155,32 @@ function CameraApp() {
     // Logic for posting to farcaster
     const DEFAULT_PLACEHOLDER = 'Type to Cast...';
     const text = `Attested Image: ${FILE_URL_PREFIX}${filename}`;
-    const farcasterUser = { signer_uuid: 'example_signer_uuid' }; // Replace with actual farcasterUser object
+    const farcasterUser = { signer_uuid: '7efc93ab-d667-4f45-89c5-ad2858af5ea2' }; // Replace with actual farcasterUser object
+
+    // Generate an idempotency key
+    const generateIdem = () => {
+      return Math.random().toString(36).substring(2, 18);
+    };
 
     try {
       const respBody = {
         parent: '',
         signer_uuid: farcasterUser.signer_uuid,
         text: text,
+        channel_id: 'farcaster',
+        idem: generateIdem(),
+        parent_author_fid: 0
       };
-      const response = await fetch(`${API_URL}/neynar/cast`, {
-        body: JSON.stringify(respBody),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const options = {
         method: 'POST',
-      });
+        headers: {
+          accept: 'application/json',
+          api_key: process.env.EXPO_PUBLIC_NEYNAR_API_KEY || '', 
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(respBody)
+      };
+      const response = await fetch('https://api.neynar.com/v2/farcaster/cast', options);
 
       const result = await response.json();
       if (response.ok) {
