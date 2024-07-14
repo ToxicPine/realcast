@@ -1,10 +1,35 @@
-# Realcast ✍️
+# Realcast: Farcaster with Provably Real Media
 
-A beautiful yet simple Farcaster client with image authenticity features using cryptographic signatures produced by the device's enclave. The inbuilt image capture and image viewer tools enable users and third parties to verify the origin and authenticity of the media. We use group signatures via BBS rather than SNARK proofs to create a chain of trust that ties the image to a trusted manufacturer of secure camera hardware. This process conceals the signer identities, mitigating the risk of doxxing users and preventing deepfake misinformation. The UI distinguishes images lacking these camera proofs from those with valid proofs, ensuring that only images from trusted hardware are considered authentic.
+**Built for ETHGlobal Brussels 2024, Based on Litecast**
 
-Crucially, we implement encrypted camera identifiers, allowing only trusted parties to know the true signer identities. This enables the blacklisting of malicious or hacked cameras while ensuring differential privacy and abuse prevention.
+A beautiful yet simple Farcaster client which allows you to take and share provably real images. The authenticity of images is guaranteed using cryptographic signatures produced by the device's secure enclave, which are only possible to produce for images that came directly out of the camera sensor. The inbuilt image capture and image viewer tools enable users and third parties to verify the origin and authenticity of the media. We use group signatures via BBS to create a chain of trust that ties the image to a trusted manufacturer of secure camera hardware. This process conceals the signer identities, mitigating the risk of doxxing users and preventing deepfake misinformation. The UI distinguishes images lacking these camera proofs from those with valid proofs, ensuring that only images from trusted hardware are considered authentic.
 
-### Built with
+Crucially, we implement encrypted camera identifiers, allowing only trusted parties to know the true signer identities. This enables the blacklisting of malicious or hacked cameras while ensuring differential privacy and abuse prevention. This blacklisting may be performed whilst preserving anonymity, with retroactive force, instantaneously and at scale, with [MPC privacy features](https://eprint.iacr.org/2022/1362). This is made possible by our custom in-house cryptography libraries, which are included in this project as proprietary blobs.
+
+## Why?
+
+On the 23rd of January, an AI-generated voice message falsely claiming to be President Biden discouraged Democrats from voting in the 2024 primary. Barely a week later, a finance worker lost $25 million to scammers through a deepfake video call mimicking his colleagues. On X (formerly known as Twitter), meanwhile, AI-created explicit images falsely attributed to Taylor Swift attracted 45 million views and sparked wide-spread outrage. These incidents are only a snapshot of the diverse and damaging impact deepfakes can have across politics, finance, and social media.
+
+Forgeries used to be easily detectable by eye, but deepfakes make it easy and cheap to create images almost indistinguishable from real photos. For example, the website “OnlyFake” uses deepfake technology to generate realistic photos of fake IDs in minutes for just $15. The photos have been used to bypass the anti-fraud safeguards, known as Know-Your-Customer (KYC), on OKX (a crypto exchange). In the case of OKX, the deepfake IDs fooled their staff, who are trained to spot doctored images and deepfakes. This highlights that it is no longer possible to detect deepfake-based fraud by eye, even for professionals.
+
+One solution is to detect malicious deepfakes once they’re in the wild instead of preventing their creation. But, deepfake-detecting AI models (such as those deployed by OpenAI) are becoming obsolete due to inaccuracies. Although deepfake detection methods have become more sophisticated, the techniques for creating deepfakes are becoming more sophisticated at a faster rate – the deepfake detectors are losing the technological arms race. Alternative solutions, such as C2PA, are failing to attract adoption due to poor UX or [egregious privacy or scalability deficiencies](https://www.youtube.com/watch?v=-Bdb2KOb_zI).
+
+## Features
+
+- Hardware-backed Security through PlayIntegrity APIs
+- Anonymous Attestations based on Group Signatures
+  - With minor alterations, it allows people to be added and removed from the set of approved signers entirely anonymous.
+  - The revocation of the users signing privileges may be performed retrospectively, without de-anonymising anyone.
+- Blockchain-Based Timestamping Server on Base, Polygon and Arbitrum
+
+## Our Contributions
+
+- Mobile bindings to our cryptographic library.
+- Inbuilt attested camera and photo viewer.
+- Refactored Farcaster client, improved UX.
+- Simple data-storage and blockchain time-stamping servers.
+
+## Built with
 
 - [Expo](https://expo.dev)
 - FarcasterKit's [farcasterkit-react-native](https://www.npmjs.com/package/farcasterkit-react-native)
@@ -21,8 +46,7 @@ Crucially, we implement encrypted camera identifiers, allowing only trusted part
 2. Set environment variables
 
 -   Copy `.env.example` to a new `.env` file and add your `NEYNAR_API_KEY`
--   In `constants.ts`, the `API_URL` value is for FarcasterKit's API, which has routes to get/receive the signer and post casts to Neynar. Don't change this value unless you're running the FarcasterKit API locally, but if not change the value to `http://api.farcasterkit.com`
-- Set the same values you have in your `.env` file in `eas.json` under the env sections for development and preview
+-   Copy `.eas.example.json` to a new `.eas.json` file and populate with your own values
 
 3. Create Expo project
 
@@ -31,27 +55,16 @@ Crucially, we implement encrypted camera identifiers, allowing only trusted part
 
 4. Run by calling `yarn start`
 
-### Todos
-Note: These are just a few todos on the top of my mind that would get the app to v1.0 (full feature parity with the mockups below), but I'm sure smaller tasks and larger ideas will come to mind as well.
+### TODOs
 
--   [] Further style the cast and thread components
--   [] Add search
--   [] Add following channels (via search)
--   [] Add user pages
--   [] Add more of the backend logic to [farcasterkit-react-native](https://www.npmjs.com/package/farcasterkit-react-native) (not much left to move over)
--   [] Add logout capabilities
-
-### Mockups
-
-Here are some mockups to further showcase where the app is headed -- huge shoutout again to [Sirsu](https://warpcast.com/sirsu) for the amazing designs 🙌
-
-|                       Login                        |                       Home                        |
-| :------------------------------------------------: | :-----------------------------------------------: |
-| ![Realcast Login](https://i.imgur.com/ncsCxVU.png) | ![Realcast Home](https://i.imgur.com/GBlg0fJ.png) |
-
-|                       Search                        |                       Reply                        |
-| :-------------------------------------------------: | :------------------------------------------------: |
-| ![Realcast Search](https://i.imgur.com/cDsCm95.png) | ![Realcast Reply](https://i.imgur.com/BdhLkTy.png) |
+- Refactor, since the code is spaghetti.
+- Eliminate unwanted or deprecated dependencies.
+- Introduce Farcaster Frames.
+- Introduce dark mode.
+- Introduce reactions and reposts.
+- Upgrade the cryptographic libraries to support the dynamic blacklisting of hacked devices.
+- Strengthen integrity checks, generate own keys with blinded protocol.
+- Fortify time-stamping and data storage, which currently features zero security and little scalability.
 
 ### Credits
 

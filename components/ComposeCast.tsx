@@ -5,24 +5,22 @@ import { API_URL } from '../constants/Farcaster';
 import { useLogin } from 'farcasterkit-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
-// import { useLogin } from '../providers/NeynarProvider';
 
-const ComposeCast = ({ hash }: { hash?: string }) => {
+interface ComposeCastProps {
+  hash?: string;
+  isInputVisible: boolean;
+  setInputVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  handleOutsidePress: () => void;
+}
+
+const ComposeCast = ({ hash, isInputVisible, setInputVisible, handleOutsidePress }: ComposeCastProps) => {
   const DEFAULT_PLACEHOLDER = 'Type to Cast...';
   const [text, setText] = useState<string>('');
   const [placeholder, setPlaceholder] = useState<string>(DEFAULT_PLACEHOLDER);
-  const [isInputVisible, setInputVisible] = useState<boolean>(false);
   const { farcasterUser } = useLogin();
   const navigation = useNavigation();
 
   const handleCast = useHandleCast({ text, setText, setPlaceholder, farcasterUser, hash });
-
-  const handleOutsidePress = (event: any) => {
-    if (event.target !== textInputRef.current) {
-      setInputVisible(false);
-      Keyboard.dismiss();
-    }
-  };
 
   const textInputRef = React.useRef<TextInput>(null);
 
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: '#2f2f2f',
     borderRadius: 64,
-    margin: 16,
+    margin: 20,
     paddingHorizontal: 20,
     paddingVertical: 16,
     shadowColor: '#000',
@@ -141,10 +139,10 @@ const styles = StyleSheet.create({
   },
   roundButton: {
     position: 'absolute',
-    bottom: 30,
-    right: 30,
-    width: 60,
-    height: 60,
+    bottom: 20,
+    right: 20,
+    width: 64,
+    height: 64,
     borderRadius: 64,
     backgroundColor: '#000',
     alignItems: 'center',

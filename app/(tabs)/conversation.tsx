@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { formatDistanceToNow } from 'date-fns';
@@ -203,17 +203,31 @@ export default function ConversationScreen() {
     );
   };
 
+  const [isInputVisible, setInputVisible] = useState(false);
+
+  const handleOutsidePress = () => {
+    setInputVisible(false);
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={styles.container}>
-      <FlashList
-        contentContainerStyle={styles.scrollView}
-        data={thread}
-        renderItem={renderCast}
-        keyExtractor={(item) => item.hash}
-        estimatedItemSize={125}
-      />
-      {thread.length > 0 && <ComposeCast hash={thread[0].hash} />}
-    </View>
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.container}>
+        <FlashList
+          contentContainerStyle={styles.scrollView}
+          data={thread}
+          renderItem={renderCast}
+          keyExtractor={(item) => item.hash}
+          estimatedItemSize={125}
+        />
+        {thread.length > 0 && <ComposeCast
+          isInputVisible={isInputVisible}
+          setInputVisible={setInputVisible}
+          handleOutsidePress={handleOutsidePress}
+          hash={thread[0].hash}
+        />}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

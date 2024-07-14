@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list'
 import _ from 'lodash'
-import React, { useCallback } from 'react'
-import { View, StyleSheet, ActivityIndicator } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { View, StyleSheet, ActivityIndicator, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import ComposeCast from '../../components/ComposeCast'
 import Cast from '../../components/Cast'
 import { useRoute } from '@react-navigation/native'
@@ -22,24 +22,39 @@ const ChannelScreen = () => {
     }
   }, [isReachingEnd, loadMore])
 
+  const [isInputVisible, setInputVisible] = useState(false);
+
+  const handleOutsidePress = () => {
+    setInputVisible(false);
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={styles.container}>
-      <FlashList
-        contentContainerStyle={styles.flashList}
-        data={casts}
-        renderItem={({ item }) => <Cast key={item.hash} cast={item} />}
-        keyExtractor={(item) => item.hash}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.1}
-        ListFooterComponent={() =>
-          isLoading && !isReachingEnd ? (
-            <ActivityIndicator style={{ margin: 20 }} size="large" color="#000000" />
-          ) : null
-        }
-        estimatedItemSize={125}
-      />
-      <ComposeCast />
-    </View>
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.container}>
+        <FlashList
+          contentContainerStyle={styles.flashList}
+          data={casts}
+          renderItem={({ item }) => <Cast key={item.hash} cast={item} />}
+          keyExtractor={(item) => item.hash}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={() =>
+            isLoading && !isReachingEnd ? (
+              <ActivityIndicator style={{ margin: 20 }} size="large" color="#000000" />
+            ) : null
+          }
+          estimatedItemSize={125}
+        />
+        <View style={{ flex: 1 }}>
+          <ComposeCast
+            isInputVisible={isInputVisible}
+            setInputVisible={setInputVisible}
+            handleOutsidePress={handleOutsidePress}
+          />
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   )
 }
 
