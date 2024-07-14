@@ -1,0 +1,6 @@
+[submodule "android/rust-lib/lib/lib_real"]
+	path = android/rust-lib/lib/lib_real
+	url = git@github.com:VeracityLabs/lib_real.git
+[submodule "android/rust-lib/lib/gsig-rs"]
+	path = android/rust-lib/lib/gsig-rs
+	url = git@github.com:VeracityLabs/gsig-rs.git
