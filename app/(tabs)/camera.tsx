@@ -7,6 +7,9 @@ import * as MediaLibrary from 'expo-media-library';
 import { EventEmitter, Subscription } from "expo-modules-core";
 import LibRealModule from '../LibRealModule';
 import { API_URL } from '../../constants/Farcaster';
+import { readFile } from 'react-native-fs';
+import { Platform } from 'react-native';
+import RNFS from 'react-native-fs';
 
 const FILE_URL_PREFIX = 'https://192.168.129.214:8000/download/';
 const FILE_UPLOAD_URL = 'http://192.168.129.214:8000/upload/';
@@ -24,6 +27,28 @@ function CameraApp() {
   const navigation = useNavigation();
   const route = useRoute();
   const { type: routeType } = route.params;
+
+  const filePathGmsk = Platform.OS === 'android' 
+    ? 'android/app/src/main/assets/bbs_bls_2020_gmsk.bin' 
+    : `${RNFS.MainBundlePath}/bbs_bls_2020_gmsk.bin`;
+
+  const filePathGpk = Platform.OS === 'android' 
+    ? 'android/app/src/main/assets/bbs_bls_2020_gpk.bin' 
+    : `${RNFS.MainBundlePath}/bbs_bls_2020_gpk.bin`;
+
+  useEffect(() => {
+    const initializeFiles = async () => {
+      const fileDataGmsk = await readFile(filePathGmsk, 'base64');
+      const fileDataGpk = await readFile(filePathGpk, 'base64');
+
+      const uint8ArrayGmsk = Uint8Array.from(atob(fileDataGmsk), c => c.charCodeAt(0));
+      const uint8ArrayGpk = Uint8Array.from(atob(fileDataGpk), c => c.charCodeAt(0));
+
+      LibRealModule.initDynamic(uint8ArrayGpk, uint8ArrayGmsk);
+    };
+
+    initializeFiles();
+  }, []);
 
   const handleBackPress = () => {
     navigation.navigate('index');
@@ -134,10 +159,16 @@ function CameraApp() {
       let photo = await cameraRef.current.takePictureAsync();
       if (photo) {
         try {
-          const asset = await MediaLibrary.createAssetAsync(photo.uri);
-          await MediaLibrary.createAlbumAsync('Wink', asset, false);
-          Alert.alert('Photo saved', 'Your photo has been saved to your gallery.');
-
+          const response = await fetch(photo.uri);
+          const blob = await response.blob();
+          const arrayBuffer = await blob.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+          const signedImage = LibRealModule.signImage(uint8Array);
+          const signedImageBase64 = Buffer.from(signedImage).toString('base64');
+          const signedImageUri = `data:image/jpeg;base64,${signedImageBase64}`;
+          const signedImageAsset = await MediaLibrary.createAssetAsync(signedImageUri);
+          await MediaLibrary.createAlbumAsync('Wink', signedImageAsset, false);
+          Alert.alert('Photo saved', 'Your signed photo has been saved to your gallery.');
           // Upload the photo after saving it
           await uploadFile(photo);
         } catch (error) {
@@ -175,7 +206,7 @@ function CameraApp() {
         method: 'POST',
         headers: {
           accept: 'application/json',
-          api_key: process.env.EXPO_PUBLIC_NEYNAR_API_KEY || '', 
+          api_key: process.env.EXPO_PUBLIC_NEYNAR_API_KEY || '', // Ensure api_key is always a string
           'content-type': 'application/json'
         },
         body: JSON.stringify(respBody)

@@ -5,6 +5,7 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useLogin, useReaction } from 'farcasterkit-react-native'
 import { useNavigation } from '@react-navigation/native'
+import LibRealModule from '../app/LibRealModule'
 
 const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
   const { farcasterUser } = useLogin()
@@ -41,7 +42,7 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
     }
   }
 
-  const renderImages = () => {
+  const renderImages = async () => {
     // Regex to match image URLs
     const regex = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif)/g
 
@@ -56,13 +57,29 @@ const Cast = ({ cast }: { cast: NeynarCastV2 }) => {
     // Combine and de-duplicate URLs from text and embeds
     const allMatches = Array.from(new Set([...textMatches, ...embedMatches]))
 
+    const processedImages = await Promise.all(
+      allMatches.map(async (url) => {
+        try {
+          const response = await fetch(url)
+          const blob = await response.blob()
+          const arrayBuffer = await blob.arrayBuffer()
+          const uint8Array = new Uint8Array(arrayBuffer)
+          const imageVerified = LibRealModule.verifyImageStatic(uint8Array)
+          return { url, imageVerified }
+        } catch (error) {
+          console.error('Error processing image:', error)
+          return { url, imageVerified: null }
+        }
+      })
+    )
+
     // Render images
     return (
       <View style={imageStyles.imagesContainer}>
-        {allMatches.map((url) => (
+        {processedImages.map(({ url, imageVerified }) => (
           <View key={url} style={imageStyles.imageContainer}>
             <Image source={{ uri: url }} style={imageStyles.image} />
-            {true && (
+            {imageVerified && (
               <View style={imageStyles.securityIconContainer}>
                 <MaterialIcons name="security" size={20} color="white" />
               </View>
