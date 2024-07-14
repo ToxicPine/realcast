@@ -3,17 +3,19 @@ import { useState, useEffect, useRef } from 'react';
 import { Alert, Button, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library';
 import { EventEmitter, Subscription } from "expo-modules-core";
 import LibRealModule from '../LibRealModule';
 
 function CameraApp() {
   const [facing, setFacing] = useState('back');
-  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const [selectedImage, setSelectedImage] = useState(null);
   const [isViewerVisible, setIsViewerVisible] = useState(false);
   const [serverData, setServerData] = useState(null);
   const [cameraRatio, setCameraRatio] = useState(["1:1", 1]); 
+  const [uploadStatus, setUploadStatus] = useState('');
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -36,33 +38,66 @@ function CameraApp() {
       },
     });
   }, [navigation]);
-  
+
   const cameraRef = useRef(null);
+
+  const uploadFile = async (photo) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: photo.uri,
+        type: 'image/jpeg', // or photo.type
+        name: 'photo.jpg', // or use photo.uri.split('/').pop() to get the file name
+      });
+
+      const response = await fetch('http://192.168.129.214:8000/upload/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setUploadStatus(`File uploaded successfully: ${result.info}`);
+        onUploadSuccess();
+        navigation.navigate('index');
+      } else {
+        setUploadStatus('File upload failed');
+        Alert.alert('Error', 'File upload failed');
+      }
+    } catch (err) {
+      setUploadStatus(`Unknown error: ${err.message}`);
+      Alert.alert('Error', `Unknown error: ${err.message}`);
+    }
+  };
 
   useEffect(() => {
     prepareRatio();
   }, []);
 
-  if (!permission) {
-    // Camera permissions are still loading
+  if (!cameraPermission || !mediaPermission) {
+    // Permissions are still loading
     return <View />;
   }
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet
+  if (!cameraPermission.granted || !mediaPermission.granted) {
+    // Permissions are not granted yet
     return (
       <View style={{
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'white',
         padding: 16,
-        }}>
-        <Text style={{ textAlign: 'center' }}>We Need Permission To Use The Camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+      }}>
+        <Text style={{ textAlign: 'center' }}>We Need Permission To Use The Camera and Media Library</Text>
+        <Button onPress={requestCameraPermission} title="Grant Camera Permission" />
+        <Button onPress={requestMediaPermission} title="Grant Media Permission" />
       </View>
     );
   }
-  
+
   async function prepareRatio() {
     if (cameraRef.current) {
       const ratios = await cameraRef.current.getSupportedRatiosAsync();
@@ -88,6 +123,9 @@ function CameraApp() {
           const asset = await MediaLibrary.createAssetAsync(photo.uri);
           await MediaLibrary.createAlbumAsync('Wink', asset, false);
           Alert.alert('Photo saved', 'Your photo has been saved to your gallery.');
+
+          // Upload the photo after saving it
+          await uploadFile(photo);
         } catch (error) {
           console.log('error saving', error);
           Alert.alert('Error', 'Failed to save photo');
@@ -96,13 +134,19 @@ function CameraApp() {
     }
   }
 
+  function onUploadSuccess() {
+    // Handle successful upload
+    console.log('Upload was successful');
+    // Additional logic here if needed
+  }
+
   return (
     <View style={styles.container}>
       <CameraView
-        ref={cameraRef} 
+        ref={cameraRef}
         onCameraReady={prepareRatio}
         ratio={cameraRatio[0]}
-        style={{ flex: 0, aspectRatio: cameraRatio[1] }}  
+        style={{ flex: 0, aspectRatio: cameraRatio[1] }}
         facing={facing}
       >
       </CameraView>
@@ -114,6 +158,7 @@ function CameraApp() {
           <MaterialCommunityIcons name="camera-flip" size={24} color="white" />
         </TouchableOpacity>
       </View>
+      {uploadStatus ? <Text>{uploadStatus}</Text> : null}
     </View>
   );
 }
@@ -150,11 +195,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
   },
-  badge: { 
-    backgroundColor: '#ffffff', 
+  badge: {
+    backgroundColor: '#ffffff',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8 
+    borderRadius: 8
   },
   imageViewHeader: {
     alignSelf: 'flex-end',
