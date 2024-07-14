@@ -6,6 +6,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
 import { EventEmitter, Subscription } from "expo-modules-core";
 import LibRealModule from '../LibRealModule';
+import { API_URL } from '../../constants/Farcaster';
+
+const FILE_URL_PREFIX = 'https://192.168.129.214:8000/download/';
+const FILE_UPLOAD_URL = 'http://192.168.129.214:8000/upload/';
 
 function CameraApp() {
   const [facing, setFacing] = useState('back');
@@ -41,16 +45,20 @@ function CameraApp() {
 
   const cameraRef = useRef(null);
 
+  const generateRandomFilename = () => {
+    return Math.random().toString(36).substring(2, 8) + '.jpg';
+  };
+
   const uploadFile = async (photo) => {
     try {
       const formData = new FormData();
       formData.append('file', {
         uri: photo.uri,
         type: 'image/jpeg', // or photo.type
-        name: 'photo.jpg', // or use photo.uri.split('/').pop() to get the file name
+        name: generateRandomFilename(), // generate random filename
       });
 
-      const response = await fetch('http://192.168.129.214:8000/upload/', {
+      const response = await fetch(FILE_UPLOAD_URL, {
         method: 'POST',
         body: formData,
         headers: {
@@ -60,8 +68,8 @@ function CameraApp() {
 
       if (response.ok) {
         const result = await response.json();
-        setUploadStatus(`File uploaded successfully: ${result.info}`);
-        onUploadSuccess();
+        setUploadStatus(`File uploaded successfully: ${result.filename}`);
+        onUploadSuccess(result?.filename);
         navigation.navigate('index');
       } else {
         setUploadStatus('File upload failed');
@@ -134,10 +142,39 @@ function CameraApp() {
     }
   }
 
-  function onUploadSuccess() {
+  async function onUploadSuccess(filename: string) {
     // Handle successful upload
     console.log('Upload was successful');
-    // Additional logic here if needed
+
+    // Logic for posting to farcaster
+    const DEFAULT_PLACEHOLDER = 'Type to Cast...';
+    const text = `Attested Image: ${FILE_URL_PREFIX}${filename}`;
+    const farcasterUser = { signer_uuid: 'example_signer_uuid' }; // Replace with actual farcasterUser object
+
+    try {
+      const respBody = {
+        parent: '',
+        signer_uuid: farcasterUser.signer_uuid,
+        text: text,
+      };
+      const response = await fetch(`${API_URL}/neynar/cast`, {
+        body: JSON.stringify(respBody),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log('Cast posted successfully!');
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Could not send the cast', error);
+      Alert.alert('Error', 'Could not send the cast');
+    }
   }
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../constants/Farcaster';
 import { useLogin } from 'farcasterkit-react-native';
@@ -105,6 +105,7 @@ export const useHandleCast = ({
         }
       } catch (error) {
         console.error('Could not send the cast', error);
+        Alert.alert('Error', 'Could not send the cast');
       }
     }
   }, [text, farcasterUser, hash, setText, setPlaceholder]);
