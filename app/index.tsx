@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
 import SignInWithNeynar from '../components/SignInWithNeynar';
 import { Text, View } from '../components/Themed';
@@ -6,15 +6,43 @@ import ConnectAsGuest from '../components/ConnectAsGuest';
 import { useLogin } from 'farcasterkit-react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchDataWithAppCheck } from './services/FirebaseService';
+import { storeData, getData } from './storage/SecureStorageService';
 
 export default function IndexScreen() {
   const { farcasterUser } = useLogin();
   const router = useRouter();
+
   useEffect(() => {
     if(farcasterUser){
       router.push('/(tabs)');
     }
   }, [farcasterUser]);
+
+  const [serverData, setServerData] = useState(null);
+
+  // App Check Logic.
+  /* useEffect(() => {
+    const checkDataAndFetch = async () => {
+      try {
+        const storedData = await getData('serverData');
+        if (storedData !== null) {
+          setServerData(JSON.parse(storedData));
+        } else {
+          fetchDataWithAppCheck().then(data => {
+            if (data) {
+              setServerData(data);
+              storeData('serverData', JSON.stringify(data));
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error accessing secure storage", error);
+      }
+    };
+
+    checkDataAndFetch();
+  }, []); */
 
   return (
       <SafeAreaView style={styles.container}>
